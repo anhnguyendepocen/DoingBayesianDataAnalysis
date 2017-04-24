@@ -1,0 +1,71 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+All code and examples are from https://sites.google.com/site/doingbayesiandataanalysis/
+
+
+# Chapter 02: Introduction
+
+## 2.3.3 A Simple Example of R in Action
+
+```{r}
+x <- seq(from = -2, to = 2, by = 0.1)
+y <- x^2
+plot(x, y, type = "l")
+```
+
+## Exerises
+
+### 2.5 see above
+
+### 2.6
+```{r}
+x <- seq(from = -3, to = 3, by = 0.1)
+y <- x^3
+plot(x, y, type = "l")
+```
+
+# Chapter 03: Stuff Called Probability
+
+## 3.2.1.1 Simulating a Long-Run Relative Frequence
+
+### 3.5.1
+
+The goal is to toss a coin N times and compute the running proporiton of heads.
+
+```{r}
+N <- 500 # total flips
+
+set.seed(47405)
+flipsequence <- sample(x = c(0,1), prob = c(0.5, 0.5), size = N, replace = TRUE)
+r <- cumsum(flipsequence)
+n <- 1:N
+runprop <- r/n
+
+plot(n, runprop, type = "o", log = "x", xlim = c(1,N), ylim = c(0.0, 1.0),
+     cex.axis = 1.5, xlab = "Flip Number", ylab = "Proportion Heads", cex.lab = 1.5,
+     main = "Running Proportion of Heads", cex.main = 1.5)
+lines(c(1,N), c(0.5, 0.5), lty = 3)
+```
+
+### 3.5.2
+```{r}
+meanval <- 0.0
+sdval <- 0.2
+xlow <- meanval - 3 * sdval
+xhigh <- meanval + 3 * sdval
+dx = 0.02
+
+x <- seq(from = xlow, to = xhigh, by = dx)
+y <- (1 / (sdval*sqrt(2*pi))) * exp(-0.5 * ((x - meanval)/sdval)^2)
+
+plot(x, y, type = "h", lwd = 1, cex.axis = 1.5)
+lines(x, y)
+
+```
+
+
+# Chapter 04
+
+
