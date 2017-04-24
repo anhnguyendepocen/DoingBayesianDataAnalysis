@@ -1,5 +1,5 @@
 
-source("minNforHDIpower.R")
+source("DBDA2Eprograms/minNforHDIpower.R")
 
 # Specify desired powers:
 desPow = seq(.7,.9,by=0.1)

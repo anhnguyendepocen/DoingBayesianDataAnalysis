@@ -1,6 +1,6 @@
 graphics.off()
-source("DBDA2E-utilities.R")
-source("BernGrid.R")
+source("DBDA2Eprograms/DBDA2E-utilities.R")
+source("DBDA2Eprograms/BernGrid.R")
 
 
 Theta = seq( 0 , 1 , length=5 )  # Sparse teeth for Theta.

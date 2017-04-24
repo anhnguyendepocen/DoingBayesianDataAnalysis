@@ -4,15 +4,17 @@ output: html_notebook
 ---
 All code and examples are from https://sites.google.com/site/doingbayesiandataanalysis/
 
+```{r, setup}
+knitr::opts_knit$set(root.dir = normalizePath(".")) 
+```
+
 
 # Chapter 02: Introduction
 
 ## 2.3.3 A Simple Example of R in Action
 
 ```{r}
-x <- seq(from = -2, to = 2, by = 0.1)
-y <- x^2
-plot(x, y, type = "l")
+source("DBDA2Eprograms/SimpleGraph.R")
 ```
 
 ## Exerises
@@ -35,37 +37,77 @@ plot(x, y, type = "l")
 The goal is to toss a coin N times and compute the running proporiton of heads.
 
 ```{r}
-N <- 500 # total flips
-
-set.seed(47405)
-flipsequence <- sample(x = c(0,1), prob = c(0.5, 0.5), size = N, replace = TRUE)
-r <- cumsum(flipsequence)
-n <- 1:N
-runprop <- r/n
-
-plot(n, runprop, type = "o", log = "x", xlim = c(1,N), ylim = c(0.0, 1.0),
-     cex.axis = 1.5, xlab = "Flip Number", ylab = "Proportion Heads", cex.lab = 1.5,
-     main = "Running Proportion of Heads", cex.main = 1.5)
-lines(c(1,N), c(0.5, 0.5), lty = 3)
+source("DBDA2Eprograms/RunningProportion.R")
 ```
 
 ### 3.5.2
+
 ```{r}
-meanval <- 0.0
-sdval <- 0.2
-xlow <- meanval - 3 * sdval
-xhigh <- meanval + 3 * sdval
-dx = 0.02
+source("DBDA2Eprograms/IntegralOfDensity.R")
+```
 
-x <- seq(from = xlow, to = xhigh, by = dx)
-y <- (1 / (sdval*sqrt(2*pi))) * exp(-0.5 * ((x - meanval)/sdval)^2)
 
-plot(x, y, type = "h", lwd = 1, cex.axis = 1.5)
-lines(x, y)
+# Chapter 06: Binomial Probability (in 2nd edition)
+## Chapter 05 in first edition
+
+```{r}
+source("DBDA2Eprograms/BernBetaExample.R")
+```
+
+### 5.6: Exercises (first edition)
+
+```{r}
+# 5.1
+
+post = BernBeta( priorBetaAB = c(4, 4), Data = c(1), plotType = "Bars", 
+                 showCentTend = "Mode", showHDI = TRUE, showpD = FALSE )
+# get heads again
+post <- BernBeta( priorBetaAB = post, Data = c(1) )
+# get tails
+post <- BernBeta( priorBetaAB = post, Data = c(0) )
+
+
+
+## same updating using sequence THH instead of HHT
+post = BernBeta( priorBetaAB = c(4,4), Data = c(0) )
+# get heads again
+post <- BernBeta( priorBetaAB = post, Data = c(1) )
+# get tails
+post <- BernBeta( priorBetaAB = post, Data = c(1) )
+
+# 5.2
+
+
+```
+
+## Chapter 06 in first edition
+
+```{r}
+source("DBDA2Eprograms/BernGridExample.R")
+```
+
+### 6.8: Exercises (first edition)
+
+```{r}
 
 ```
 
 
-# Chapter 04
+
+
+# Chapter 7: Markov Chain Monte Carlo
+
+
+
+
+
+
+# Chapter 13
+
+```{r}
+source("DBDA2Eprograms/minNforHDIpower-example.R")
+```
+
+
 
 

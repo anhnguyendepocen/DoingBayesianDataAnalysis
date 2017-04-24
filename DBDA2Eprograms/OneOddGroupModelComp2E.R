@@ -4,7 +4,7 @@
 #   A Tutorial with R, JAGS, and Stan. 2nd Edition. Academic Press / Elsevier.
 graphics.off()
 rm(list=ls(all=TRUE))
-source("DBDA2E-utilities.R")
+source("DBDA2Eprograms/DBDA2E-utilities.R")
 #require(rjags)
 #require(runjags)
 fileNameRoot="OneOddGroupModelComp2E-" 

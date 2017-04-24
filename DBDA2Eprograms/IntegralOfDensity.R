@@ -1,4 +1,4 @@
-source("DBDA2E-utilities.R")
+source("DBDA2Eprograms/DBDA2E-utilities.R")
 # Graph of normal probability density function, with comb of intervals.
 meanval = 0.0               # Specify mean of distribution.
 sdval = 0.2                 # Specify standard deviation of distribution.

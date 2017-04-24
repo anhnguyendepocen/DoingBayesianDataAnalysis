@@ -1,5 +1,5 @@
-source("DBDA2E-utilities.R")  # Load definitions of graphics functions etc.
-source("BernBeta.R")          # Load the definition of the BernBeta function
+source("DBDA2Eprograms/DBDA2E-utilities.R")  # Load definitions of graphics functions etc.
+source("DBDA2Eprograms/BernBeta.R")          # Load the definition of the BernBeta function
 
 # Specify the prior:
 t = 0.75             # Specify the prior MODE.
