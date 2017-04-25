@@ -207,6 +207,39 @@ M1post_mean / M2post_mean
 
 # Chapter 7: Markov Chain Monte Carlo
 
+## Exercises 7.2
+
+```{r}
+
+## 7.7
+proposalSD <- c(0.02, 0.2, 2.0)[3]
+
+source("DBDA2Eprograms/BernMetrop.R")
+
+## 7.2
+openGraph(height = 7, width = 3.5) # open blank graph window
+layout(matrix(1:2, nrow = 2)) # creates a 2 by 1 layout for the plots
+acf( acceptedTraj, lag.max = 30, col = "skyblue", lwd = 3 ) # creates acf plot and places on top plot
+Len <- length( acceptedTraj ) # length of the chain
+Lag <- 10 # lag number to observe
+trajHead <- acceptedTraj[1 : (Len - Lag)] # accept trajectory for heads
+trajTail <- acceptedTraj[(1 + Lag) : Len] # accept trajectory for tails
+plot( trajHead, trajTail, pch = ".", col = "skyblue",
+      main = bquote( list("Prpsl.SD" == .(proposalSD),
+                          lag == .(Lag),
+                          cor == .(round(cor(trajHead, trajTail), 3)))))  # creates scatter plot
+
+
+## 7.3
+
+theta <- seq(0, 1, length = 501)
+ptheta <- (cos(4*pi*theta) + 1)^2/1.5
+plot(theta, (cos(4*pi*theta) + 1)^2/1.5)
+
+source("DBDA2Eprograms/BernMetrop.R")
+
+```
+
 
 
 

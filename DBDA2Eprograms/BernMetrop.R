@@ -1,10 +1,13 @@
 graphics.off()
 rm(list=ls(all=TRUE))
 fileNameRoot="BernMetrop" # for output filenames
-source("DBDA2E-utilities.R")
+source("DBDA2Eprograms/DBDA2E-utilities.R")
 
 # Specify the data, to be used in the likelihood function.
 myData = c(rep(0,6),rep(1,14))
+myData <- c() # excersie 7.3c
+myData <- c(0, 1, 1) # excersie 7.3d
+
 
 # Define the Bernoulli likelihood function, p(D|theta).
 # The argument theta could be a vector, not just a scalar.
@@ -22,6 +25,7 @@ likelihood = function( theta , data ) {
 # Define the prior density function. 
 prior = function( theta ) {
   pTheta = dbeta( theta , 1 , 1 )
+  pTheta <- (cos(4*pi*theta) + 1)^2/1.5 # excersie 7.3
   # The theta values passed into this function are generated at random,
   # and therefore might be inadvertently greater than 1 or less than 0.
   # The prior for theta > 1 or for theta < 0 is zero:
@@ -121,3 +125,18 @@ if ( burnIn > 0 ) {
 #                        "Init" , trajectory[1] ) , type="eps" )
 
 #------------------------------------------------------------------------
+
+## Added lines for exercise 7.2
+
+openGraph(height = 7, width = 3.5)
+layout(matrix(1:2, nrow = 2))
+acf( acceptedTraj, lag.max = 30, col = "skyblue", lwd = 3 )
+Len <- length( acceptedTraj )
+Lag <- 10
+trajHead <- acceptedTraj[1 : (Len - Lag)]
+trajTail <- acceptedTraj[(1 + Lag) : Len]
+plot( trajHead, trajTail, pch = ".", col = "skyblue",
+      main = bquote( list("Prpsl.SD" == .(proposalSD),
+                          lag == .(Lag),
+                          cor == .(round(cor(trajHead, trajTail), 3)))))
+

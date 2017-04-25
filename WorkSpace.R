@@ -60,35 +60,35 @@ for( i in 1 : Nsim ) {
 
   # Example 2.6 Negative Binomial has Mixture representation between gamma and poisson
 
-Nsim=10^4
-n=6;p=.3
-y=rgamma(Nsim,n,rate=p/(1-p))
-x=rpois(Nsim,y)
-hist(x,main="",freq=F,col="grey",breaks=40)
-lines(1:50,dnbinom(1:50,n,p),lwd=2,col="sienna")
+Nsim <- 10^4
+n <- 6; p <- 0.3
+y <- rgamma(Nsim, n, rate = p/(1-p))
+x <- rpois(Nsim, y)
+hist(x, main = "", freq = F, col = "grey", breaks = 40)
+lines(1 : 50, dnbinom(1 : 50, n, p), lwd = 2,col = "sienna")
 
 
 
   # Accept Reject Method
     # randg(1) is a 'made-up' function as a place holder of an R function represnetating a distribution
 
-u=runif(1)*M
-y=randg(1)
-while (u>f(y)/g(y)){
-  u=runif(1)*M
-  y=randg(1)
+u <- runif(1) * M
+y <- randg(1)
+while ( u > f(y) / g(y) ) {
+  u <- runif(1) * M
+  y <- randg(1)
 }
 
 
 
   # Example 3.1
 
-ch=function(la){
-  integrate(function(x){x^(la-1)*exp(-x)},0,Inf)$val
+ch <- function( la ) {
+  integrate(function( x ) {x ^ (la - 1) * exp(-x) }, 0, Inf)$val
 }
-plot(lgamma(seq(.01,10,le=100)),log(apply(as.matrix(
-  seq(.01,10,le=100)),1,ch)),xlab="log(integrate(f))",
-  ylab=expression(log(Gamma(lambda))),pch=19,cex=.6)
+plot(lgamma(seq(0.01, 10, le = 100)),log(apply(as.matrix(
+  seq(0.01, 10, le = 100)), 1, ch)), xlab = "log(integrate(f))",
+  ylab = expression(log(Gamma(lambda))), pch = 19, cex = 0.6)
 
 
 
