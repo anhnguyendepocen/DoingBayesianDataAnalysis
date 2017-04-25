@@ -59,7 +59,7 @@ source("DBDA2Eprograms/BernBetaExample.R")
 ```{r}
 # 5.1
 
-post = BernBeta( priorBetaAB = c(4, 4), Data = c(1), plotType = "Bars", 
+post <- BernBeta( priorBetaAB = c(4, 4), Data = c(1), plotType = "Bars", 
                  showCentTend = "Mode", showHDI = TRUE, showpD = FALSE )
 # get heads again
 post <- BernBeta( priorBetaAB = post, Data = c(1) )
@@ -69,14 +69,51 @@ post <- BernBeta( priorBetaAB = post, Data = c(0) )
 
 
 ## same updating using sequence THH instead of HHT
-post = BernBeta( priorBetaAB = c(4,4), Data = c(0) )
+post <- BernBeta( priorBetaAB = c(4,4), Data = c(0) )
 # get heads again
 post <- BernBeta( priorBetaAB = post, Data = c(1) )
 # get tails
 post <- BernBeta( priorBetaAB = post, Data = c(1) )
 
-# 5.2
 
+
+# 5.2
+post <- BernBeta( priorBetaAB = c(1,1), Data = c(rep(1, 58), rep(0, 42)),
+                  showCentTend = "Mean", showHDI = TRUE, showpD = FALSE)
+
+## HDI: (0.483, 0.673)
+## Yes, it is credible to believe the population is equally divided
+post <- BernBeta( priorBetaAB = c(58,42), Data = c(rep(1, 57), rep(0, 43)),
+                  showCentTend = "Mean", showHDI = TRUE, showpD = FALSE)
+
+# HDI: (0.507, 0.643)
+# No, it is not credible now because the HDI does not contain .5
+
+
+## 5.3
+post_radio <- BernBeta( priorBetaAB = c(1, 1), Data = c(rep(1, 40), rep(0, 10)),
+                  showCentTend = "Mean", showHDI = TRUE, showpD = FALSE)
+# HDI: (0.677, 0.893)
+
+post_ocean <- BernBeta( priorBetaAB = c(1, 1), Data = c(rep(1, 15), rep(0, 35)),
+                  showCentTend = "Mean", showHDI = TRUE, showpD = FALSE)
+# HDI: (0.187, 0.433)
+
+
+## 5.4
+post <- BernBeta( priorBetaAB = c(0.5, 0.5), Data = c(rep(1, 4), rep(0, 1)),
+                  showCentTend = "Mean", showHDI = TRUE, showpD = FALSE)
+# [1] 4.5 1.5
+
+
+## 5.6
+
+post1 <- BernBeta( priorBetaAB = c(1, 1), Data = c(rep(1, 15), rep(0, 5)),
+                  showCentTend = "Mean", showHDI = TRUE, showpD = FALSE)
+post2 <- BernBeta( priorBetaAB = c(10, 10), Data = c(rep(1, 15), rep(0, 5)),
+                  showCentTend = "Mean", showHDI = TRUE, showpD = FALSE)
+
+(post1[1]/sum(post1))/(post2[1]/sum(post2))
 
 ```
 
@@ -89,7 +126,80 @@ source("DBDA2Eprograms/BernGridExample.R")
 ### 6.8: Exercises (first edition)
 
 ```{r}
+## 6.1
 
+nIntervals <- 10
+width <- 1/ nIntervals
+Theta <- seq(from = width/2, to = 1 - width/2, by = width)
+approxMass <- dbeta(Theta, 8, 4) * width
+pTheta <- approxMass / sum(approxMass)
+
+sum(approxMass)
+
+## 6.2
+pTheta <- c(50:1, rep(1, 50), 1:50, 50:1)
+pTheta <- pTheta / sum(pTheta)
+width <- 1 / length(pTheta)
+Theta <- seq(from = width/2, to = 1 - width/2, by = width)
+
+BernGrid( Theta = Theta, pTheta = pTheta, Data = c(rep(1, 15),rep(0, 5)),
+          plotType = "Bars", showCentTend = "Mean",
+                     showHDI = TRUE, HDImass=0.95 ,
+                     showpD = TRUE, nToPlot=min(2001,length(Theta)) )
+# HDI: (0.602, 0.878)
+
+## 6.3
+postA <- BernGrid( Theta = Theta, pTheta = pTheta, Data = c(rep(1, 3),rep(0, 1)),
+          plotType = "Bars", showCentTend = "Mean",
+                     showHDI = TRUE, HDImass=0.95 ,
+                     showpD = TRUE, nToPlot=min(2001,length(Theta)) )
+
+postB <- BernGrid( Theta = Theta, pTheta = postA, Data = c(rep(1, 15),rep(0, 5)),
+          plotType = "Bars", showCentTend = "Mean",
+                     showHDI = TRUE, HDImass=0.95 ,
+                     showpD = TRUE, nToPlot=min(2001,length(Theta)) )
+
+## 6.6
+binwidth <- 1/1000
+thetagrid <- seq( from = binwidth/2, to = 1 - binwidth/2, by = binwidth )
+relprob <- thetagrid ^ 2
+prior <- relprob / sum(relprob) # probabilit mass at each theta
+  
+posterior <- BernGrid( Theta = thetagrid, pTheta = prior, 
+                       Data = c(rep(1, 2),rep(0, 2)),
+                       plotType = "Bars", showCentTend = "Mean",
+                       showHDI = TRUE, HDImass=0.95 ,
+                       showpD = TRUE, nToPlot=min(2001,length(Theta)) )
+sum( thetagrid * posterior )
+
+
+## 6.7
+binwidth <- 1/1000
+thetagrid <- seq( from = binwidth/2, to = 1 - binwidth/2, by = binwidth )
+relprob <- thetagrid ^ 2
+prior <- relprob / sum(relprob) # probabilit mass at each theta
+
+posteriorM1 <- BernGrid( Theta = thetagrid, pTheta = prior, 
+                       Data = c(rep(1, 6),rep(0, 2)),
+                       plotType = "Bars", showCentTend = "Mean",
+                       showHDI = TRUE, HDImass=0.95 ,
+                       showpD = TRUE, nToPlot=min(2001,length(Theta)) )
+M1post_mean <- sum( thetagrid * posteriorM1 )
+
+
+binwidth <- 1/1000
+thetagrid <- seq( from = binwidth/2, to = 1 - binwidth/2, by = binwidth )
+relprob <- (1 - thetagrid) ^ 2
+prior <- relprob / sum(relprob) # probabilit mass at each theta
+
+posteriorM2 <- BernGrid( Theta = thetagrid, pTheta = prior, 
+                       Data = c(rep(1, 6),rep(0, 2)),
+                       plotType = "Bars", showCentTend = "Mean",
+                       showHDI = TRUE, HDImass=0.95 ,
+                       showpD = TRUE, nToPlot=min(2001,length(Theta)) )
+M2post_mean <- sum( thetagrid * posteriorM2 )
+
+M1post_mean / M2post_mean
 ```
 
 
