@@ -4,16 +4,16 @@ graphics.off() # This closes all of R's graphics windows.
 rm(list=ls())  # Careful! This clears all of R's memory!
 #------------------------------------------------------------------------------- 
 # Read the data 
-myData = read.csv("BattingAverage.csv")
+myData = read.csv("DBDA2Eprograms/BattingAverage.csv")
 contrasts = list( 
   list( c("Pitcher") , c("Catcher") , compVal=0.0 , ROPE=NULL ) ,
   list( c("Catcher") , c("1st Base") , compVal=0.0 , ROPE=NULL ) 
 )
 fileNameRoot = "BattingAverage-logistic-" 
-graphFileType = "eps" 
+graphFileType = "png" 
 #------------------------------------------------------------------------------- 
 # Load the relevant model into R's working memory:
-source("Jags-Ybinom-Xnom1fac-Mlogistic.R")
+source("DBDA2Eprograms/Jags-Ybinom-Xnom1fac-Mlogistic.R")
 # Generate the MCMC chain:
 #startTime = proc.time()
 mcmcCoda = genMCMC( datFrm=myData, yName="Hits", NName="AtBats", xName="PriPos",

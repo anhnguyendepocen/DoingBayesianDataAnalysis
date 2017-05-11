@@ -8,13 +8,13 @@ graphics.off() # This closes all of R's graphics windows.
 rm(list=ls())  # Careful! This clears all of R's memory!
 
 # Load the functions used below:
-source("DBDA2E-utilities.R") # Must be in R's current working directory.
+source("DBDA2Eprograms/DBDA2E-utilities.R") # Must be in R's current working directory.
 want = c("ellipse")
 have = want %in% rownames(installed.packages())
 if ( any(!have) ) { install.packages( want[!have] ) }
 
 # Load the data:
-myData = read.csv("HtWtData110.csv") # must have file in curr. work. dir.
+myData = read.csv("DBDA2Eprograms/HtWtData110.csv") # must have file in curr. work. dir.
 # y must have named columns, with no missing values!
 y = myData[,c("weight","height")] 
 

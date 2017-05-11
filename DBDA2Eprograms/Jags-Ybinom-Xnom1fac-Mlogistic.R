@@ -2,7 +2,7 @@
 #   Kruschke, J. K. (2014). Doing Bayesian Data Analysis: 
 #   A Tutorial with R, JAGS and Stan, 2nd Edition. Academic Press / Elsevier.
 
-source("DBDA2E-utilities.R")
+source("DBDA2Eprograms/DBDA2E-utilities.R")
 
 #===============================================================================
 genMCMC = function( 
