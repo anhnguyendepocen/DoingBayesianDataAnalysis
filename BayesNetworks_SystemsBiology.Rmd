@@ -40,11 +40,104 @@ random.graph(LETTERS[1:6], num = 2, method = "ic-dag")
 random.graph(LETTERS[1:6], method = "melancon")
 ```
 
+## Chapter 1 Code
+```{r}
+source("BayesianNetworkSystemsBiology/chapter1.R")
+```
+
 
 # Chapter 02: Bayesian Networks in the Absence of Temporal Information
 
+## 2.3.2 Creating and Manipulating Network Structures
+
+### Undirected Graph
 ```{r}
 library(bnlearn)
 
+data(marks)
+str(marks)
+ug <- empty.graph(names(marks))
+arcs(ug, check.cycles = TRUE) <- matrix(
+  c("MECH", "VECT", "MECH", "ALG", "VECT", "MECH",
+    "VECT", "ALG", "ALG", "MECH", "ALG",   "VECT",
+    "ALG", "ANL", "ALG", "STAT", "ANL",    "ALG",
+    "ANL", "STAT", "STAT", "ALG", "STAT",  "ANL"),
+  ncol = 2, byrow = TRUE,
+  dimnames = list(c(), c("from", "to")))
+ug
+
+```
+
+
+### Directed Acyclic Graph
+
+```{r}
+dag <- empty.graph(names(marks))
+arcs(dag) <- matrix(
+  c("VECT", "MECH", "ALG", "MECH", "ALG", "VECT",
+    "ANL", "ALG", "STAT", "ALG", "STAT", "ANL"),
+  ncol = 2, byrow = TRUE,
+  dimnames = list(c(), c("from", "to")))
+dag
+mat <- matrix(c(0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+      1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0), nrow = 5,
+      dimnames = list(nodes(dag), nodes(dag)))
+mat
+dag2 <- empty.graph(nodes(dag))
+amat(dag2) <- mat
+all.equal(dag, dag2)
+
+dag3 <- empty.graph(nodes(dag))
+dag3 <- set.arc(dag3, "VECT", "MECH")
+dag3 <- set.arc(dag3, "ALG", "MECH")
+dag3 <- set.arc(dag3, "ALG", "VECT")
+dag3 <- set.arc(dag3, "ANL", "ALG")
+dag3 <- set.arc(dag3, "STAT", "ALG")
+dag3 <- set.arc(dag3, "STAT", "ANL")
+
+all.equal(dag, dag3)
+all.equal(ug, moral(dag))
+```
+
+
+### Node orderings/checking
+
+```{r}
+
+node.ordering(dag)
+nbr(dag, "ANL")
+mb(dag, "ANL")
+"ANL" %in% mb(dag, "ALG")
+"ALG" %in% mb(dag, "ANL")
+
+chld <- children(dag, "VECT")
+par <- parents(dag, "VECT")
+o.par <- sapply(chld, parents, x = dag)
+unique(c(chld, par, o.par[o.par != "VECT"]))
+mb(dag, "VECT")
+
+```
+
+### Scoring criteria
+
+```{r}
+score(dag, data = marks, type = "loglik-g")
+dag.eq <- reverse.arc(dag, "STAT", "ANL")
+score(dag.eq, data = marks, type = "loglik-g")
+vstructs(dag)
+vstructs(dag.eq)
+vstructs(dag, moral = TRUE)
+vstructs(dag.eq, moral = TRUE)
+all.equal(cpdag(dag), cpdag(dag.eq))
+all.equal(moral(dag), moral(dag.eq))
+
+dag2 <- drop.arc(dag, from = "STAT", to = "ANL")
+dag3 <- drop.arc(dag, from = "ALG", to = "VECT")
+vstructs(dag2)
+vstructs(dag3)
+all.equal(cpdag(dag2), cpdag(dag3))
+all.equal(moral(dag2), moral(dag3))
+all.equal(moral(dag2), moral(dag))
+all.equal(moral(dag3), moral(dag))
 ```
 

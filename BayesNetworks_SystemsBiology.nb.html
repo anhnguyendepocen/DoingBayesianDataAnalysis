@@ -211,21 +211,132 @@ random.graph(LETTERS[1:6], method = &quot;melancon&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="chapter-1-code" class="section level2">
+<h2>Chapter 1 Code</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlKFwiQmF5ZXNpYW5OZXR3b3JrU3lzdGVtc0Jpb2xvZ3kvY2hhcHRlcjEuUlwiKVxuYGBgIn0= -->
+<pre class="r"><code>source(&quot;BayesianNetworkSystemsBiology/chapter1.R&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
 </div>
 <div id="chapter-02-bayesian-networks-in-the-absence-of-temporal-information" class="section level1">
 <h1>Chapter 02: Bayesian Networks in the Absence of Temporal Information</h1>
+<div id="creating-and-manipulating-network-structures" class="section level2">
+<h2>2.3.2 Creating and Manipulating Network Structures</h2>
+<div id="undirected-graph" class="section level3">
+<h3>Undirected Graph</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShibmxlYXJuKVxuXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShibmxlYXJuKVxuXG5kYXRhKG1hcmtzKVxuc3RyKG1hcmtzKVxudWcgPC0gZW1wdHkuZ3JhcGgobmFtZXMobWFya3MpKVxuYXJjcyh1ZywgY2hlY2suY3ljbGVzID0gVFJVRSkgPC0gbWF0cml4KFxuICBjKFwiTUVDSFwiLCBcIlZFQ1RcIiwgXCJNRUNIXCIsIFwiQUxHXCIsIFwiVkVDVFwiLCBcIk1FQ0hcIixcbiAgICBcIlZFQ1RcIiwgXCJBTEdcIiwgXCJBTEdcIiwgXCJNRUNIXCIsIFwiQUxHXCIsICAgXCJWRUNUXCIsXG4gICAgXCJBTEdcIiwgXCJBTkxcIiwgXCJBTEdcIiwgXCJTVEFUXCIsIFwiQU5MXCIsICAgIFwiQUxHXCIsXG4gICAgXCJBTkxcIiwgXCJTVEFUXCIsIFwiU1RBVFwiLCBcIkFMR1wiLCBcIlNUQVRcIiwgIFwiQU5MXCIpLFxuICBuY29sID0gMiwgYnlyb3cgPSBUUlVFLFxuICBkaW1uYW1lcyA9IGxpc3QoYygpLCBjKFwiZnJvbVwiLCBcInRvXCIpKSlcbnVnXG5cbmBgYCJ9 -->
 <pre class="r"><code>library(bnlearn)
+
+data(marks)
+str(marks)
+ug &lt;- empty.graph(names(marks))
+arcs(ug, check.cycles = TRUE) &lt;- matrix(
+  c(&quot;MECH&quot;, &quot;VECT&quot;, &quot;MECH&quot;, &quot;ALG&quot;, &quot;VECT&quot;, &quot;MECH&quot;,
+    &quot;VECT&quot;, &quot;ALG&quot;, &quot;ALG&quot;, &quot;MECH&quot;, &quot;ALG&quot;,   &quot;VECT&quot;,
+    &quot;ALG&quot;, &quot;ANL&quot;, &quot;ALG&quot;, &quot;STAT&quot;, &quot;ANL&quot;,    &quot;ALG&quot;,
+    &quot;ANL&quot;, &quot;STAT&quot;, &quot;STAT&quot;, &quot;ALG&quot;, &quot;STAT&quot;,  &quot;ANL&quot;),
+  ncol = 2, byrow = TRUE,
+  dimnames = list(c(), c(&quot;from&quot;, &quot;to&quot;)))
+ug
 </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="directed-acyclic-graph" class="section level3">
+<h3>Directed Acyclic Graph</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGFnIDwtIGVtcHR5LmdyYXBoKG5hbWVzKG1hcmtzKSlcbmFyY3MoZGFnKSA8LSBtYXRyaXgoXG4gIGMoXCJWRUNUXCIsIFwiTUVDSFwiLCBcIkFMR1wiLCBcIk1FQ0hcIiwgXCJBTEdcIiwgXCJWRUNUXCIsXG4gICAgXCJBTkxcIiwgXCJBTEdcIiwgXCJTVEFUXCIsIFwiQUxHXCIsIFwiU1RBVFwiLCBcIkFOTFwiKSxcbiAgbmNvbCA9IDIsIGJ5cm93ID0gVFJVRSxcbiAgZGltbmFtZXMgPSBsaXN0KGMoKSwgYyhcImZyb21cIiwgXCJ0b1wiKSkpXG5kYWdcbm1hdCA8LSBtYXRyaXgoYygwLCAxLCAxLCAwLCAwLCAwLCAwLCAxLCAwLCAwLCAwLCAwLCAwLFxuICAgICAgMSwgMSwgMCwgMCwgMCwgMCwgMSwgMCwgMCwgMCwgMCwgMCksIG5yb3cgPSA1LFxuICAgICAgZGltbmFtZXMgPSBsaXN0KG5vZGVzKGRhZyksIG5vZGVzKGRhZykpKVxubWF0XG5kYWcyIDwtIGVtcHR5LmdyYXBoKG5vZGVzKGRhZykpXG5hbWF0KGRhZzIpIDwtIG1hdFxuYWxsLmVxdWFsKGRhZywgZGFnMilcblxuZGFnMyA8LSBlbXB0eS5ncmFwaChub2RlcyhkYWcpKVxuZGFnMyA8LSBzZXQuYXJjKGRhZzMsIFwiVkVDVFwiLCBcIk1FQ0hcIilcbmRhZzMgPC0gc2V0LmFyYyhkYWczLCBcIkFMR1wiLCBcIk1FQ0hcIilcbmRhZzMgPC0gc2V0LmFyYyhkYWczLCBcIkFMR1wiLCBcIlZFQ1RcIilcbmRhZzMgPC0gc2V0LmFyYyhkYWczLCBcIkFOTFwiLCBcIkFMR1wiKVxuZGFnMyA8LSBzZXQuYXJjKGRhZzMsIFwiU1RBVFwiLCBcIkFMR1wiKVxuZGFnMyA8LSBzZXQuYXJjKGRhZzMsIFwiU1RBVFwiLCBcIkFOTFwiKVxuXG5hbGwuZXF1YWwoZGFnLCBkYWczKVxuYWxsLmVxdWFsKHVnLCBtb3JhbChkYWcpKVxuYGBgIn0= -->
+<pre class="r"><code>dag &lt;- empty.graph(names(marks))
+arcs(dag) &lt;- matrix(
+  c(&quot;VECT&quot;, &quot;MECH&quot;, &quot;ALG&quot;, &quot;MECH&quot;, &quot;ALG&quot;, &quot;VECT&quot;,
+    &quot;ANL&quot;, &quot;ALG&quot;, &quot;STAT&quot;, &quot;ALG&quot;, &quot;STAT&quot;, &quot;ANL&quot;),
+  ncol = 2, byrow = TRUE,
+  dimnames = list(c(), c(&quot;from&quot;, &quot;to&quot;)))
+dag
+mat &lt;- matrix(c(0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+      1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0), nrow = 5,
+      dimnames = list(nodes(dag), nodes(dag)))
+mat
+dag2 &lt;- empty.graph(nodes(dag))
+amat(dag2) &lt;- mat
+all.equal(dag, dag2)
+
+dag3 &lt;- empty.graph(nodes(dag))
+dag3 &lt;- set.arc(dag3, &quot;VECT&quot;, &quot;MECH&quot;)
+dag3 &lt;- set.arc(dag3, &quot;ALG&quot;, &quot;MECH&quot;)
+dag3 &lt;- set.arc(dag3, &quot;ALG&quot;, &quot;VECT&quot;)
+dag3 &lt;- set.arc(dag3, &quot;ANL&quot;, &quot;ALG&quot;)
+dag3 &lt;- set.arc(dag3, &quot;STAT&quot;, &quot;ALG&quot;)
+dag3 &lt;- set.arc(dag3, &quot;STAT&quot;, &quot;ANL&quot;)
+
+all.equal(dag, dag3)
+all.equal(ug, moral(dag))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="node-orderingschecking" class="section level3">
+<h3>Node orderings/checking</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5ub2RlLm9yZGVyaW5nKGRhZylcbm5icihkYWcsIFwiQU5MXCIpXG5tYihkYWcsIFwiQU5MXCIpXG5cIkFOTFwiICVpbiUgbWIoZGFnLCBcIkFMR1wiKVxuXCJBTEdcIiAlaW4lIG1iKGRhZywgXCJBTkxcIilcblxuY2hsZCA8LSBjaGlsZHJlbihkYWcsIFwiVkVDVFwiKVxucGFyIDwtIHBhcmVudHMoZGFnLCBcIlZFQ1RcIilcbm8ucGFyIDwtIHNhcHBseShjaGxkLCBwYXJlbnRzLCB4ID0gZGFnKVxudW5pcXVlKGMoY2hsZCwgcGFyLCBvLnBhcltvLnBhciAhPSBcIlZFQ1RcIl0pKVxubWIoZGFnLCBcIlZFQ1RcIilcblxuYGBgIn0= -->
+<pre class="r"><code>
+node.ordering(dag)
+nbr(dag, &quot;ANL&quot;)
+mb(dag, &quot;ANL&quot;)
+&quot;ANL&quot; %in% mb(dag, &quot;ALG&quot;)
+&quot;ALG&quot; %in% mb(dag, &quot;ANL&quot;)
+
+chld &lt;- children(dag, &quot;VECT&quot;)
+par &lt;- parents(dag, &quot;VECT&quot;)
+o.par &lt;- sapply(chld, parents, x = dag)
+unique(c(chld, par, o.par[o.par != &quot;VECT&quot;]))
+mb(dag, &quot;VECT&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="scoring-criteria" class="section level3">
+<h3>Scoring criteria</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2NvcmUoZGFnLCBkYXRhID0gbWFya3MsIHR5cGUgPSBcImxvZ2xpay1nXCIpXG5kYWcuZXEgPC0gcmV2ZXJzZS5hcmMoZGFnLCBcIlNUQVRcIiwgXCJBTkxcIilcbnNjb3JlKGRhZy5lcSwgZGF0YSA9IG1hcmtzLCB0eXBlID0gXCJsb2dsaWstZ1wiKVxudnN0cnVjdHMoZGFnKVxudnN0cnVjdHMoZGFnLmVxKVxudnN0cnVjdHMoZGFnLCBtb3JhbCA9IFRSVUUpXG52c3RydWN0cyhkYWcuZXEsIG1vcmFsID0gVFJVRSlcbmFsbC5lcXVhbChjcGRhZyhkYWcpLCBjcGRhZyhkYWcuZXEpKVxuYWxsLmVxdWFsKG1vcmFsKGRhZyksIG1vcmFsKGRhZy5lcSkpXG5cbmRhZzIgPC0gZHJvcC5hcmMoZGFnLCBmcm9tID0gXCJTVEFUXCIsIHRvID0gXCJBTkxcIilcbmRhZzMgPC0gZHJvcC5hcmMoZGFnLCBmcm9tID0gXCJBTEdcIiwgdG8gPSBcIlZFQ1RcIilcbnZzdHJ1Y3RzKGRhZzIpXG52c3RydWN0cyhkYWczKVxuYWxsLmVxdWFsKGNwZGFnKGRhZzIpLCBjcGRhZyhkYWczKSlcbmFsbC5lcXVhbChtb3JhbChkYWcyKSwgbW9yYWwoZGFnMykpXG5hbGwuZXF1YWwobW9yYWwoZGFnMiksIG1vcmFsKGRhZykpXG5hbGwuZXF1YWwobW9yYWwoZGFnMyksIG1vcmFsKGRhZykpXG5gYGAifQ== -->
+<pre class="r"><code>score(dag, data = marks, type = &quot;loglik-g&quot;)
+dag.eq &lt;- reverse.arc(dag, &quot;STAT&quot;, &quot;ANL&quot;)
+score(dag.eq, data = marks, type = &quot;loglik-g&quot;)
+vstructs(dag)
+vstructs(dag.eq)
+vstructs(dag, moral = TRUE)
+vstructs(dag.eq, moral = TRUE)
+all.equal(cpdag(dag), cpdag(dag.eq))
+all.equal(moral(dag), moral(dag.eq))
+
+dag2 &lt;- drop.arc(dag, from = &quot;STAT&quot;, to = &quot;ANL&quot;)
+dag3 &lt;- drop.arc(dag, from = &quot;ALG&quot;, to = &quot;VECT&quot;)
+vstructs(dag2)
+vstructs(dag3)
+all.equal(cpdag(dag2), cpdag(dag3))
+all.equal(moral(dag2), moral(dag3))
+all.equal(moral(dag2), moral(dag))
+all.equal(moral(dag3), moral(dag))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
+</div>
+</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIEludHJvIGFuZCBXZWJzaXRlDQoNCmh0dHA6Ly93d3cuYm5sZWFybi5jb20vZXhhbXBsZXMvDQoNCmBgYHtyfQ0KbGlicmFyeShibmxlYXJuKQ0KbGlicmFyeShpZ3JhcGgpDQoNCmUgPC0gZW1wdHkuZ3JhcGgoTEVUVEVSU1sxOjZdKQ0KY2xhc3MoZSkNCmUNCg0KZW1wdHkuZ3JhcGgoTEVUVEVSU1sxOjZdLCBudW0gPSAyKQ0KDQphcmMuc2V0IDwtIG1hdHJpeChjKCJBIiwgIkMiLCAiQiIsICJGIiwgIkMiLCAiRiIpLCBuY29sID0gMiwgYnlyb3cgPSBUUlVFLCBkaW1uYW1lcyA9IGxpc3QoTlVMTCwgYygiZnJvbSIsICJ0byIpKSkNCmFyYy5zZXQNCg0KYXJjcyhlKSA8LSBhcmMuc2V0DQplDQoNCg0KbW9kZWwybmV0d29yaygiW0FdW0NdW0J8QV1bRHxDXVtGfEE6QjpDXVtFfEZdIikNCm1vZGVsc3RyaW5nKGUpID0gIltBXVtDXVtCfEFdW0R8Q11bRnxBOkI6Q11bRXxGXSINCmUNCg0KcmFuZG9tLmdyYXBoKExFVFRFUlNbMTo2XSwgcHJvYiA9IDAuMSkNCg0KIyMgU2FtcGxpbmcgZnJvbSB0aGUgc3BhY2Ugb2YgY29ubmVjdGVkIGRpcmVjdGVkIGFjeWNsaWMgZ3JhcGhzIHdpdGggdW5pZm9ybSBwcm9iYWJpbGl0eQ0KcmFuZG9tLmdyYXBoKExFVFRFUlNbMTo2XSwgbnVtID0gMiwgbWV0aG9kID0gImljLWRhZyIpDQoNCiMjIFNhbXBsaW5nIGZyb20gdGhlIHNwYWNlIG9mIHRoZSBkaXJlY3RlZCBhY3ljbGljIGdyYXBocyB3aXRoIHVuaWZvcm0gcHJvYmFiaWxpdHkNCg0KIyMjIE1lbGFuw6dvbidzIE1DTUMgYWxnb3JpdGhtIHNhbXBsZXMgd2l0aCB1bmlmb3JtIHByb2JhYmlsaXR5IA0KIyMjIGZyb20gdGhlIHNwYWNlIG9mIGRpcmVjdGVkIGFjeWNsaWMgZ3JhcGhzIChub3QgbmVjZXNzYXJpbHkgY29ubmVjdGVkKQ0KcmFuZG9tLmdyYXBoKExFVFRFUlNbMTo2XSwgbWV0aG9kID0gIm1lbGFuY29uIikNCmBgYA0KDQoNCiMgQ2hhcHRlciAwMjogQmF5ZXNpYW4gTmV0d29ya3MgaW4gdGhlIEFic2VuY2Ugb2YgVGVtcG9yYWwgSW5mb3JtYXRpb24NCg0KYGBge3J9DQpsaWJyYXJ5KGJubGVhcm4pDQoNCmBgYA0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIEludHJvIGFuZCBXZWJzaXRlDQoNCmh0dHA6Ly93d3cuYm5sZWFybi5jb20vZXhhbXBsZXMvDQoNCmBgYHtyfQ0KbGlicmFyeShibmxlYXJuKQ0KbGlicmFyeShpZ3JhcGgpDQoNCmUgPC0gZW1wdHkuZ3JhcGgoTEVUVEVSU1sxOjZdKQ0KY2xhc3MoZSkNCmUNCg0KZW1wdHkuZ3JhcGgoTEVUVEVSU1sxOjZdLCBudW0gPSAyKQ0KDQphcmMuc2V0IDwtIG1hdHJpeChjKCJBIiwgIkMiLCAiQiIsICJGIiwgIkMiLCAiRiIpLCBuY29sID0gMiwgYnlyb3cgPSBUUlVFLCBkaW1uYW1lcyA9IGxpc3QoTlVMTCwgYygiZnJvbSIsICJ0byIpKSkNCmFyYy5zZXQNCg0KYXJjcyhlKSA8LSBhcmMuc2V0DQplDQoNCg0KbW9kZWwybmV0d29yaygiW0FdW0NdW0J8QV1bRHxDXVtGfEE6QjpDXVtFfEZdIikNCm1vZGVsc3RyaW5nKGUpID0gIltBXVtDXVtCfEFdW0R8Q11bRnxBOkI6Q11bRXxGXSINCmUNCg0KcmFuZG9tLmdyYXBoKExFVFRFUlNbMTo2XSwgcHJvYiA9IDAuMSkNCg0KIyMgU2FtcGxpbmcgZnJvbSB0aGUgc3BhY2Ugb2YgY29ubmVjdGVkIGRpcmVjdGVkIGFjeWNsaWMgZ3JhcGhzIHdpdGggdW5pZm9ybSBwcm9iYWJpbGl0eQ0KcmFuZG9tLmdyYXBoKExFVFRFUlNbMTo2XSwgbnVtID0gMiwgbWV0aG9kID0gImljLWRhZyIpDQoNCiMjIFNhbXBsaW5nIGZyb20gdGhlIHNwYWNlIG9mIHRoZSBkaXJlY3RlZCBhY3ljbGljIGdyYXBocyB3aXRoIHVuaWZvcm0gcHJvYmFiaWxpdHkNCg0KIyMjIE1lbGFuw6dvbidzIE1DTUMgYWxnb3JpdGhtIHNhbXBsZXMgd2l0aCB1bmlmb3JtIHByb2JhYmlsaXR5IA0KIyMjIGZyb20gdGhlIHNwYWNlIG9mIGRpcmVjdGVkIGFjeWNsaWMgZ3JhcGhzIChub3QgbmVjZXNzYXJpbHkgY29ubmVjdGVkKQ0KcmFuZG9tLmdyYXBoKExFVFRFUlNbMTo2XSwgbWV0aG9kID0gIm1lbGFuY29uIikNCmBgYA0KDQojIyBDaGFwdGVyIDEgQ29kZQ0KYGBge3J9DQpzb3VyY2UoIkJheWVzaWFuTmV0d29ya1N5c3RlbXNCaW9sb2d5L2NoYXB0ZXIxLlIiKQ0KYGBgDQoNCg0KIyBDaGFwdGVyIDAyOiBCYXllc2lhbiBOZXR3b3JrcyBpbiB0aGUgQWJzZW5jZSBvZiBUZW1wb3JhbCBJbmZvcm1hdGlvbg0KDQojIyAyLjMuMiBDcmVhdGluZyBhbmQgTWFuaXB1bGF0aW5nIE5ldHdvcmsgU3RydWN0dXJlcw0KDQojIyMgVW5kaXJlY3RlZCBHcmFwaA0KYGBge3J9DQpsaWJyYXJ5KGJubGVhcm4pDQoNCmRhdGEobWFya3MpDQpzdHIobWFya3MpDQp1ZyA8LSBlbXB0eS5ncmFwaChuYW1lcyhtYXJrcykpDQphcmNzKHVnLCBjaGVjay5jeWNsZXMgPSBUUlVFKSA8LSBtYXRyaXgoDQogIGMoIk1FQ0giLCAiVkVDVCIsICJNRUNIIiwgIkFMRyIsICJWRUNUIiwgIk1FQ0giLA0KICAgICJWRUNUIiwgIkFMRyIsICJBTEciLCAiTUVDSCIsICJBTEciLCAgICJWRUNUIiwNCiAgICAiQUxHIiwgIkFOTCIsICJBTEciLCAiU1RBVCIsICJBTkwiLCAgICAiQUxHIiwNCiAgICAiQU5MIiwgIlNUQVQiLCAiU1RBVCIsICJBTEciLCAiU1RBVCIsICAiQU5MIiksDQogIG5jb2wgPSAyLCBieXJvdyA9IFRSVUUsDQogIGRpbW5hbWVzID0gbGlzdChjKCksIGMoImZyb20iLCAidG8iKSkpDQp1Zw0KDQpgYGANCg0KDQojIyMgRGlyZWN0ZWQgQWN5Y2xpYyBHcmFwaA0KDQpgYGB7cn0NCmRhZyA8LSBlbXB0eS5ncmFwaChuYW1lcyhtYXJrcykpDQphcmNzKGRhZykgPC0gbWF0cml4KA0KICBjKCJWRUNUIiwgIk1FQ0giLCAiQUxHIiwgIk1FQ0giLCAiQUxHIiwgIlZFQ1QiLA0KICAgICJBTkwiLCAiQUxHIiwgIlNUQVQiLCAiQUxHIiwgIlNUQVQiLCAiQU5MIiksDQogIG5jb2wgPSAyLCBieXJvdyA9IFRSVUUsDQogIGRpbW5hbWVzID0gbGlzdChjKCksIGMoImZyb20iLCAidG8iKSkpDQpkYWcNCm1hdCA8LSBtYXRyaXgoYygwLCAxLCAxLCAwLCAwLCAwLCAwLCAxLCAwLCAwLCAwLCAwLCAwLA0KICAgICAgMSwgMSwgMCwgMCwgMCwgMCwgMSwgMCwgMCwgMCwgMCwgMCksIG5yb3cgPSA1LA0KICAgICAgZGltbmFtZXMgPSBsaXN0KG5vZGVzKGRhZyksIG5vZGVzKGRhZykpKQ0KbWF0DQpkYWcyIDwtIGVtcHR5LmdyYXBoKG5vZGVzKGRhZykpDQphbWF0KGRhZzIpIDwtIG1hdA0KYWxsLmVxdWFsKGRhZywgZGFnMikNCg0KZGFnMyA8LSBlbXB0eS5ncmFwaChub2RlcyhkYWcpKQ0KZGFnMyA8LSBzZXQuYXJjKGRhZzMsICJWRUNUIiwgIk1FQ0giKQ0KZGFnMyA8LSBzZXQuYXJjKGRhZzMsICJBTEciLCAiTUVDSCIpDQpkYWczIDwtIHNldC5hcmMoZGFnMywgIkFMRyIsICJWRUNUIikNCmRhZzMgPC0gc2V0LmFyYyhkYWczLCAiQU5MIiwgIkFMRyIpDQpkYWczIDwtIHNldC5hcmMoZGFnMywgIlNUQVQiLCAiQUxHIikNCmRhZzMgPC0gc2V0LmFyYyhkYWczLCAiU1RBVCIsICJBTkwiKQ0KDQphbGwuZXF1YWwoZGFnLCBkYWczKQ0KYWxsLmVxdWFsKHVnLCBtb3JhbChkYWcpKQ0KYGBgDQoNCg0KIyMjIE5vZGUgb3JkZXJpbmdzL2NoZWNraW5nDQoNCmBgYHtyfQ0KDQpub2RlLm9yZGVyaW5nKGRhZykNCm5icihkYWcsICJBTkwiKQ0KbWIoZGFnLCAiQU5MIikNCiJBTkwiICVpbiUgbWIoZGFnLCAiQUxHIikNCiJBTEciICVpbiUgbWIoZGFnLCAiQU5MIikNCg0KY2hsZCA8LSBjaGlsZHJlbihkYWcsICJWRUNUIikNCnBhciA8LSBwYXJlbnRzKGRhZywgIlZFQ1QiKQ0Kby5wYXIgPC0gc2FwcGx5KGNobGQsIHBhcmVudHMsIHggPSBkYWcpDQp1bmlxdWUoYyhjaGxkLCBwYXIsIG8ucGFyW28ucGFyICE9ICJWRUNUIl0pKQ0KbWIoZGFnLCAiVkVDVCIpDQoNCmBgYA0KDQojIyMgU2NvcmluZyBjcml0ZXJpYQ0KDQpgYGB7cn0NCnNjb3JlKGRhZywgZGF0YSA9IG1hcmtzLCB0eXBlID0gImxvZ2xpay1nIikNCmRhZy5lcSA8LSByZXZlcnNlLmFyYyhkYWcsICJTVEFUIiwgIkFOTCIpDQpzY29yZShkYWcuZXEsIGRhdGEgPSBtYXJrcywgdHlwZSA9ICJsb2dsaWstZyIpDQp2c3RydWN0cyhkYWcpDQp2c3RydWN0cyhkYWcuZXEpDQp2c3RydWN0cyhkYWcsIG1vcmFsID0gVFJVRSkNCnZzdHJ1Y3RzKGRhZy5lcSwgbW9yYWwgPSBUUlVFKQ0KYWxsLmVxdWFsKGNwZGFnKGRhZyksIGNwZGFnKGRhZy5lcSkpDQphbGwuZXF1YWwobW9yYWwoZGFnKSwgbW9yYWwoZGFnLmVxKSkNCg0KZGFnMiA8LSBkcm9wLmFyYyhkYWcsIGZyb20gPSAiU1RBVCIsIHRvID0gIkFOTCIpDQpkYWczIDwtIGRyb3AuYXJjKGRhZywgZnJvbSA9ICJBTEciLCB0byA9ICJWRUNUIikNCnZzdHJ1Y3RzKGRhZzIpDQp2c3RydWN0cyhkYWczKQ0KYWxsLmVxdWFsKGNwZGFnKGRhZzIpLCBjcGRhZyhkYWczKSkNCmFsbC5lcXVhbChtb3JhbChkYWcyKSwgbW9yYWwoZGFnMykpDQphbGwuZXF1YWwobW9yYWwoZGFnMiksIG1vcmFsKGRhZykpDQphbGwuZXF1YWwobW9yYWwoZGFnMyksIG1vcmFsKGRhZykpDQpgYGANCg0K</div>
 
 
 
