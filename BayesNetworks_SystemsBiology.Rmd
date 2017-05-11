@@ -1,0 +1,50 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Intro and Website
+
+http://www.bnlearn.com/examples/
+
+```{r}
+library(bnlearn)
+library(igraph)
+
+e <- empty.graph(LETTERS[1:6])
+class(e)
+e
+
+empty.graph(LETTERS[1:6], num = 2)
+
+arc.set <- matrix(c("A", "C", "B", "F", "C", "F"), ncol = 2, byrow = TRUE, dimnames = list(NULL, c("from", "to")))
+arc.set
+
+arcs(e) <- arc.set
+e
+
+
+model2network("[A][C][B|A][D|C][F|A:B:C][E|F]")
+modelstring(e) = "[A][C][B|A][D|C][F|A:B:C][E|F]"
+e
+
+random.graph(LETTERS[1:6], prob = 0.1)
+
+## Sampling from the space of connected directed acyclic graphs with uniform probability
+random.graph(LETTERS[1:6], num = 2, method = "ic-dag")
+
+## Sampling from the space of the directed acyclic graphs with uniform probability
+
+### Melançon's MCMC algorithm samples with uniform probability 
+### from the space of directed acyclic graphs (not necessarily connected)
+random.graph(LETTERS[1:6], method = "melancon")
+```
+
+
+# Chapter 02: Bayesian Networks in the Absence of Temporal Information
+
+```{r}
+library(bnlearn)
+
+```
+
