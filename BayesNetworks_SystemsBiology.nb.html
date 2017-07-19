@@ -309,26 +309,105 @@ mb(dag, &quot;VECT&quot;)
 <h3>Scoring criteria</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2NvcmUoZGFnLCBkYXRhID0gbWFya3MsIHR5cGUgPSBcImxvZ2xpay1nXCIpXG5kYWcuZXEgPC0gcmV2ZXJzZS5hcmMoZGFnLCBcIlNUQVRcIiwgXCJBTkxcIilcbnNjb3JlKGRhZy5lcSwgZGF0YSA9IG1hcmtzLCB0eXBlID0gXCJsb2dsaWstZ1wiKVxudnN0cnVjdHMoZGFnKVxudnN0cnVjdHMoZGFnLmVxKVxudnN0cnVjdHMoZGFnLCBtb3JhbCA9IFRSVUUpXG52c3RydWN0cyhkYWcuZXEsIG1vcmFsID0gVFJVRSlcbmFsbC5lcXVhbChjcGRhZyhkYWcpLCBjcGRhZyhkYWcuZXEpKVxuYWxsLmVxdWFsKG1vcmFsKGRhZyksIG1vcmFsKGRhZy5lcSkpXG5cbmRhZzIgPC0gZHJvcC5hcmMoZGFnLCBmcm9tID0gXCJTVEFUXCIsIHRvID0gXCJBTkxcIilcbmRhZzMgPC0gZHJvcC5hcmMoZGFnLCBmcm9tID0gXCJBTEdcIiwgdG8gPSBcIlZFQ1RcIilcbnZzdHJ1Y3RzKGRhZzIpXG52c3RydWN0cyhkYWczKVxuYWxsLmVxdWFsKGNwZGFnKGRhZzIpLCBjcGRhZyhkYWczKSlcbmFsbC5lcXVhbChtb3JhbChkYWcyKSwgbW9yYWwoZGFnMykpXG5hbGwuZXF1YWwobW9yYWwoZGFnMiksIG1vcmFsKGRhZykpXG5hbGwuZXF1YWwobW9yYWwoZGFnMyksIG1vcmFsKGRhZykpXG5gYGAifQ== -->
-<pre class="r"><code>score(dag, data = marks, type = &quot;loglik-g&quot;)
-dag.eq &lt;- reverse.arc(dag, &quot;STAT&quot;, &quot;ANL&quot;)
-score(dag.eq, data = marks, type = &quot;loglik-g&quot;)
-vstructs(dag)
-vstructs(dag.eq)
-vstructs(dag, moral = TRUE)
-vstructs(dag.eq, moral = TRUE)
-all.equal(cpdag(dag), cpdag(dag.eq))
-all.equal(moral(dag), moral(dag.eq))
-
-dag2 &lt;- drop.arc(dag, from = &quot;STAT&quot;, to = &quot;ANL&quot;)
-dag3 &lt;- drop.arc(dag, from = &quot;ALG&quot;, to = &quot;VECT&quot;)
-vstructs(dag2)
-vstructs(dag3)
-all.equal(cpdag(dag2), cpdag(dag3))
-all.equal(moral(dag2), moral(dag3))
-all.equal(moral(dag2), moral(dag))
-all.equal(moral(dag3), moral(dag))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2NvcmUoZGFnLCBkYXRhID0gbWFya3MsIHR5cGUgPSBcImxvZ2xpay1nXCIpXG5gYGAifQ== -->
+<pre class="r"><code>score(dag, data = marks, type = &quot;loglik-g&quot;)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIC0xNjk1LjUyNVxuIn0= -->
+<pre><code>[1] -1695.525</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGFnLmVxIDwtIHJldmVyc2UuYXJjKGRhZywgXCJTVEFUXCIsIFwiQU5MXCIpXG5zY29yZShkYWcuZXEsIGRhdGEgPSBtYXJrcywgdHlwZSA9IFwibG9nbGlrLWdcIilcbmBgYCJ9 -->
+<pre class="r"><code>dag.eq &lt;- reverse.arc(dag, &quot;STAT&quot;, &quot;ANL&quot;)
+score(dag.eq, data = marks, type = &quot;loglik-g&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIC0xNjk1LjUyNVxuIn0= -->
+<pre><code>[1] -1695.525</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudnN0cnVjdHMoZGFnKVxuYGBgIn0= -->
+<pre class="r"><code>vstructs(dag)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBYICAgICAgWiAgICAgIFkgICAgIFxuWzEsXSBcIlZFQ1RcIiBcIk1FQ0hcIiBcIkFMR1wiIFxuWzIsXSBcIkFOTFwiICBcIkFMR1wiICBcIlNUQVRcIlxuIn0= -->
+<pre><code>     X      Z      Y     
+[1,] &quot;VECT&quot; &quot;MECH&quot; &quot;ALG&quot; 
+[2,] &quot;ANL&quot;  &quot;ALG&quot;  &quot;STAT&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudnN0cnVjdHMoZGFnLmVxKVxuYGBgIn0= -->
+<pre class="r"><code>vstructs(dag.eq)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBYICAgICAgWiAgICAgIFkgICAgIFxuWzEsXSBcIlZFQ1RcIiBcIk1FQ0hcIiBcIkFMR1wiIFxuWzIsXSBcIkFOTFwiICBcIkFMR1wiICBcIlNUQVRcIlxuIn0= -->
+<pre><code>     X      Z      Y     
+[1,] &quot;VECT&quot; &quot;MECH&quot; &quot;ALG&quot; 
+[2,] &quot;ANL&quot;  &quot;ALG&quot;  &quot;STAT&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudnN0cnVjdHMoZGFnLCBtb3JhbCA9IFRSVUUpXG5gYGAifQ== -->
+<pre class="r"><code>vstructs(dag, moral = TRUE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBYICAgICAgWiAgICAgIFkgICAgIFxuWzEsXSBcIlZFQ1RcIiBcIk1FQ0hcIiBcIkFMR1wiIFxuWzIsXSBcIkFOTFwiICBcIkFMR1wiICBcIlNUQVRcIlxuIn0= -->
+<pre><code>     X      Z      Y     
+[1,] &quot;VECT&quot; &quot;MECH&quot; &quot;ALG&quot; 
+[2,] &quot;ANL&quot;  &quot;ALG&quot;  &quot;STAT&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudnN0cnVjdHMoZGFnLmVxLCBtb3JhbCA9IFRSVUUpXG5gYGAifQ== -->
+<pre class="r"><code>vstructs(dag.eq, moral = TRUE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBYICAgICAgWiAgICAgIFkgICAgIFxuWzEsXSBcIlZFQ1RcIiBcIk1FQ0hcIiBcIkFMR1wiIFxuWzIsXSBcIkFOTFwiICBcIkFMR1wiICBcIlNUQVRcIlxuIn0= -->
+<pre><code>     X      Z      Y     
+[1,] &quot;VECT&quot; &quot;MECH&quot; &quot;ALG&quot; 
+[2,] &quot;ANL&quot;  &quot;ALG&quot;  &quot;STAT&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsLmVxdWFsKGNwZGFnKGRhZyksIGNwZGFnKGRhZy5lcSkpXG5gYGAifQ== -->
+<pre class="r"><code>all.equal(cpdag(dag), cpdag(dag.eq))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsLmVxdWFsKG1vcmFsKGRhZyksIG1vcmFsKGRhZy5lcSkpXG5gYGAifQ== -->
+<pre class="r"><code>all.equal(moral(dag), moral(dag.eq))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGFnMiA8LSBkcm9wLmFyYyhkYWcsIGZyb20gPSBcIlNUQVRcIiwgdG8gPSBcIkFOTFwiKVxuZGFnMyA8LSBkcm9wLmFyYyhkYWcsIGZyb20gPSBcIkFMR1wiLCB0byA9IFwiVkVDVFwiKVxudnN0cnVjdHMoZGFnMilcbmBgYCJ9 -->
+<pre class="r"><code>dag2 &lt;- drop.arc(dag, from = &quot;STAT&quot;, to = &quot;ANL&quot;)
+dag3 &lt;- drop.arc(dag, from = &quot;ALG&quot;, to = &quot;VECT&quot;)
+vstructs(dag2)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBYICAgICAgWiAgICAgIFkgICAgIFxuWzEsXSBcIlZFQ1RcIiBcIk1FQ0hcIiBcIkFMR1wiIFxuWzIsXSBcIkFOTFwiICBcIkFMR1wiICBcIlNUQVRcIlxuIn0= -->
+<pre><code>     X      Z      Y     
+[1,] &quot;VECT&quot; &quot;MECH&quot; &quot;ALG&quot; 
+[2,] &quot;ANL&quot;  &quot;ALG&quot;  &quot;STAT&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudnN0cnVjdHMoZGFnMylcbmBgYCJ9 -->
+<pre class="r"><code>vstructs(dag3)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBYICAgICAgWiAgICAgIFkgICAgIFxuWzEsXSBcIlZFQ1RcIiBcIk1FQ0hcIiBcIkFMR1wiIFxuWzIsXSBcIkFOTFwiICBcIkFMR1wiICBcIlNUQVRcIlxuIn0= -->
+<pre><code>     X      Z      Y     
+[1,] &quot;VECT&quot; &quot;MECH&quot; &quot;ALG&quot; 
+[2,] &quot;ANL&quot;  &quot;ALG&quot;  &quot;STAT&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsLmVxdWFsKGNwZGFnKGRhZzIpLCBjcGRhZyhkYWczKSlcbmBgYCJ9 -->
+<pre class="r"><code>all.equal(cpdag(dag2), cpdag(dag3))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiRGlmZmVyZW50IG51bWJlciBvZiBkaXJlY3RlZC91bmRpcmVjdGVkIGFyY3NcIlxuIn0= -->
+<pre><code>[1] &quot;Different number of directed/undirected arcs&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsLmVxdWFsKG1vcmFsKGRhZzIpLCBtb3JhbChkYWczKSlcbmBgYCJ9 -->
+<pre class="r"><code>all.equal(moral(dag2), moral(dag3))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsLmVxdWFsKG1vcmFsKGRhZzIpLCBtb3JhbChkYWcpKVxuYGBgIn0= -->
+<pre class="r"><code>all.equal(moral(dag2), moral(dag))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsLmVxdWFsKG1vcmFsKGRhZzMpLCBtb3JhbChkYWcpKVxuYGBgIn0= -->
+<pre class="r"><code>all.equal(moral(dag3), moral(dag))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
