@@ -47,7 +47,7 @@ var(new.data[is.sagrei, "Sim.Diameter"])
 var(new.data[!is.sagrei, "Sim.Diameter"])
 
 #-----------------------------------------------------------------------------#
-
+par(mfrow = c(1,1))
 boxplot(Sim.Diameter ~ Species, data = new.data, ylab = "Diameter (inches)")
 abline(h = 4, lty = "dashed")
 

@@ -1,13 +1,17 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "Bayesian Networks in Systems Biology"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+  
 ---
 
 # Intro and Website
 
 http://www.bnlearn.com/examples/
 
-```{r}
+```{r, message = FALSE}
 library(bnlearn)
 library(igraph)
 
@@ -41,7 +45,7 @@ random.graph(LETTERS[1:6], method = "melancon")
 ```
 
 ## Chapter 1 Code
-```{r}
+```{r, message= FALSE}
 source("BayesianNetworkSystemsBiology/chapter1.R")
 ```
 
@@ -51,7 +55,7 @@ source("BayesianNetworkSystemsBiology/chapter1.R")
 ## 2.3.2 Creating and Manipulating Network Structures
 
 ### Undirected Graph
-```{r}
+```{r, message = FALSE}
 library(bnlearn)
 
 data(marks)
@@ -71,7 +75,7 @@ ug
 
 ### Directed Acyclic Graph
 
-```{r}
+```{r, message = FALSE}
 dag <- empty.graph(names(marks))
 arcs(dag) <- matrix(
   c("VECT", "MECH", "ALG", "MECH", "ALG", "VECT",
@@ -102,7 +106,7 @@ all.equal(ug, moral(dag))
 
 ### Node orderings/checking
 
-```{r}
+```{r, message = FALSE}
 
 node.ordering(dag)
 nbr(dag, "ANL")
@@ -120,7 +124,7 @@ mb(dag, "VECT")
 
 ### Scoring criteria
 
-```{r}
+```{r, message = FALSE}
 score(dag, data = marks, type = "loglik-g")
 dag.eq <- reverse.arc(dag, "STAT", "ANL")
 score(dag.eq, data = marks, type = "loglik-g")
@@ -139,5 +143,45 @@ all.equal(cpdag(dag2), cpdag(dag3))
 all.equal(moral(dag2), moral(dag3))
 all.equal(moral(dag2), moral(dag))
 all.equal(moral(dag3), moral(dag))
+```
+
+
+
+```{r}
+library(deal)
+require(bnlearn)
+
+deal.net <- network(marks)
+deal.net
+
+m <- paste("[MECH][VECT|MECH][ALG|MECH:VECT]",
+           "[ANL|ALG][STAT|ALG:ANL]", sep = "")
+deal.net <- as.network(m, deal.net)
+deal.net
+
+library(catnet)
+cat.net <- cnCatnetFromEdges(names(marks), 
+                             list(MECH = NULL, VECT = "MECH", 
+                                  ALG = c("MECH", "VECT"), ANL = "ALG", 
+                                  STAT = c("ALG", "ANL")))
+cat.net
+
+chld <- cnEdges(cat.net)$VECT
+par <- cnParents(cat.net)$VECT
+o.par <- sapply(chld, function(node) {
+  cnEdges(cat.net)[[node]]
+})
+unique(unlist(c(chld, par, o.par[o.par != "VECT"])))
+
+em <- empty.graph(names(marks))
+arcs(em) <- cnMatEdges(cat.net)
+
+em <- model2network(deal::modelstring(deal.net))
+```
+
+## 2.3.3 Plotting Network Structures
+
+```{r}
+
 ```
 
