@@ -197,4 +197,11 @@ init$mu = 0.0
 post = gibbs(y=y, n_iter=1e3, init=init, prior=prior)
 ```
 
+```{r CheckPosterior}
+library("coda")
+plot(as.mcmc(post))
+
+summary(as.mcmc(post))
+```
+
 
