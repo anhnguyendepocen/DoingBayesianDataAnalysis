@@ -296,4 +296,786 @@ summary(as.mcmc(post0$mu_keep))
 mean(post0$mu_keep > 1.0) # posterior probability that mu  > 1.0
 ```
 
+## Intro to Regression (Week 3)
+
+
+### Linear Regression
+
+```{r LinearRegression}
+library(rjags)
+library(car)
+data("Leinhardt")
+
+head(Leinhardt)
+str(Leinhardt)
+pairs(Leinhardt)
+
+plot(infant ~ income, data = Leinhardt)
+hist(Leinhardt$infant)
+hist(Leinhardt$income)
+
+Leinhardt$loginfant <- log(Leinhardt$infant)
+Leinhardt$logincome <- log(Leinhardt$income)
+
+plot(loginfant ~ logincome, data= Leinhardt)
+
+lmod <- lm(loginfant ~ logincome, data = Leinhardt)
+summary(lmod)
+
+
+dat <- na.omit(Leinhardt)
+```
+
+```{r rjagsLinearModel}
+library(rjags)
+
+mod1_string <- "model{
+  for(i in 1:n) {
+    y[i] ~ dnorm(mu[i], prec)
+    mu[i] = b[1] + b[2]*log_income[i]
+  }
+  
+  for(j in 1:2) {
+    b[j] ~ dnorm(0.0, 1.0/1.0e6)
+  }
+  
+  prec ~ dgamma(5.0/2.0, 5.0*10.0/2.0)
+  sig2 = 1.0 / prec
+  sig = sqrt(sig2)
+}"
+
+set.seed(72)
+data1_jags <- list(y = dat$loginfant, n = nrow(dat), log_income = dat$logincome)
+
+params1 = c("b", "sig")
+
+inits1 <- function() {
+  inits <- list("b" = rnorm(2, 0.0, 100.0), "prec"=rgamma(1, 1.0,1.0))
+}
+
+mod1 <- jags.model(textConnection(mod1_string), data = data1_jags, inits = inits1, n.chains=3)
+
+# burn-in
+update(mod1, 1000)
+
+mod1_sim <- coda.samples(model = mod1, variable.names = params1, n.iter=5e3)
+
+mod1_csim = do.call(rbind, mod1_sim)
+```
+
+#### Model Checking
+```{r tracePlots}
+# convergence
+plot(mod1_sim)
+gelman.diag(mod1_sim)
+
+autocorr.diag(mod1_sim)
+effectiveSize((mod1_sim))
+summary(mod1_sim)
+
+# residuals
+lmod0 <- lm(infant ~ income, data = Leinhardt)
+plot(resid(lmod0))
+plot(predict(lmod0), resid(lmod0))
+qqnorm(resid(lmod0))
+
+X <- cbind(rep(1.0, data1_jags$n), data1_jags$log_income)
+pm_params1 <- colMeans(mod1_csim)
+yhat1 <- X %*% pm_params1[1:2]
+resid1 <- data1_jags$y - yhat1
+plot(resid1)
+plot(resid1, yhat1)
+qqnorm(resid1)
+
+rownames(dat)[order(resid1, decreasing = TRUE)]
+```
+
+
+
+```{r Mod2}
+library("rjags")
+
+mod2_string = " model {
+    for (i in 1:length(y)) {
+        y[i] ~ dnorm(mu[i], prec)
+        mu[i] = b[1] + b[2]*log_income[i] + b[3]*is_oil[i]
+    }
+    
+    for (i in 1:3) {
+        b[i] ~ dnorm(0.0, 1.0/1.0e6)
+    }
+    
+    prec ~ dgamma(5/2.0, 5*10.0/2.0)
+    sig = sqrt( 1.0 / prec )
+} "
+
+
+set.seed(73)
+data2_jags = list(y=dat$loginfant, log_income=dat$logincome,
+                  is_oil=as.numeric(dat$oil=="yes"))
+data2_jags$is_oil
+
+params2 = c("b", "sig")
+
+inits2 = function() {
+    inits = list("b"=rnorm(3,0.0,100.0), "prec"=rgamma(1,1.0,1.0))
+}
+
+mod2 = jags.model(textConnection(mod2_string), data=data2_jags, inits=inits2, n.chains=3)
+update(mod2, 1e3) # burn-in
+
+mod2_sim = coda.samples(model=mod2,
+                        variable.names=params2,
+                        n.iter=5e3)
+
+mod2_csim = as.mcmc(do.call(rbind, mod2_sim)) # combine multiple chains
+
+plot(mod2_sim)
+
+gelman.diag(mod2_sim)
+autocorr.diag(mod2_sim)
+
+autocorr.plot(mod2_sim)
+effectiveSize(mod2_sim)
+summary(mod2_sim)
+
+## residuals
+X2 = cbind(rep(1.0, data1_jags$n), data2_jags$log_income, data2_jags$is_oil)
+head(X2)
+(pm_params2 = colMeans(mod2_csim)) # posterior mean
+
+
+yhat2 = drop(X2 %*% pm_params2[1:3])
+resid2 = data2_jags$y - yhat2
+plot(resid2) # against data index
+plot(yhat1, resid1) # residuals from the first model
+sd(resid2) # standard deviation of residuals
+```
+
+
+```{r Mod3}
+mod3_string = " model {
+    for (i in 1:length(y)) {
+        y[i] ~ dt( mu[i], tau, df )
+        mu[i] = b[1] + b[2]*log_income[i] + b[3]*is_oil[i]
+    }
+    
+    for (i in 1:3) {
+        b[i] ~ dnorm(0.0, 1.0/1.0e6)
+    }
+    
+    df = nu + 2.0 # we want degrees of freedom > 2 to guarantee existence of mean and variance
+    nu ~ dexp(1.0)
+    
+    tau ~ dgamma(5/2.0, 5*10.0/2.0) # tau is close to, but not equal to the precision
+    sig = sqrt( 1.0 / tau * df / (df - 2.0) ) # standard deviation of errors
+} "
+```
+
+
+#### Deviance Information
+
+```{r}
+dic.samples(mod1, n.iter=1e3)
+dic.samples(mod2, n.iter=1e3)
+```
+
+
+### ANOVA
+
+```{r ANOVA}
+data("PlantGrowth")
+?PlantGrowth
+head(PlantGrowth)
+boxplot(weight ~ group, data = PlantGrowth)
+
+lmod = lm(weight ~ group, data=PlantGrowth)
+summary(lmod)
+anova(lmod)
+```
+
+```{r JagsModel}
+library(rjags)
+
+mod_string = " model {
+    for (i in 1:length(y)) {
+        y[i] ~ dnorm(mu[grp[i]], prec)
+    }
+    
+    for (j in 1:3) {
+        mu[j] ~ dnorm(0.0, 1.0/1.0e6)
+    }
+    
+    prec ~ dgamma(5/2.0, 5*1.0/2.0)
+    sig = sqrt( 1.0 / prec )
+} "
+
+set.seed(82)
+str(PlantGrowth)
+data_jags = list(y=PlantGrowth$weight, 
+                 grp=as.numeric(PlantGrowth$group))
+
+params = c("mu", "sig")
+
+inits = function() {
+    inits = list("mu"=rnorm(3,0.0,100.0), "prec"=rgamma(1,1.0,1.0))
+}
+
+mod = jags.model(textConnection(mod_string), data=data_jags, inits=inits, n.chains=3)
+update(mod, 1e3)
+
+mod_sim = coda.samples(model=mod,
+                        variable.names=params,
+                        n.iter=5e3)
+mod_csim = as.mcmc(do.call(rbind, mod_sim)) # combined chains
+
+
+## Model Checking
+plot(mod_sim)
+
+gelman.diag(mod_sim)
+autocorr.diag(mod_sim)
+effectiveSize(mod_sim)
+
+(pm_params = colMeans(mod_csim))
+(coefficients(lmod))
+
+yhat = pm_params[1:3][data_jags$grp]
+resid = data_jags$y - yhat
+plot(resid)
+
+plot(yhat, resid)
+
+summary(mod_sim)
+
+HPDinterval(mod_csim)
+mean(mod_csim[,3] > mod_csim[,1]) # 94% chance of group3 higher than group1
+mean(mod_csim[,3] > 1.1*mod_csim[,1]) # 48% chance of a 10% higher yield of group3 than group1
+```
+
+
+### Logistic Regression
+
+```{r LogisticRegression}
+library("boot")
+data("urine")
+?urine
+head(urine)
+dat = na.omit(urine)
+pairs(dat)
+
+library("corrplot")
+Cor = cor(dat)
+corrplot(Cor, type="upper", method="ellipse", tl.pos="d")
+corrplot(Cor, type="lower", method="number", col="black", 
+         add=TRUE, diag=FALSE, tl.pos="n", cl.pos="n")
+```
+
+```{r VariableSelection}
+
+X = scale(dat[,-1], center=TRUE, scale=TRUE)
+head(X[,"gravity"])
+colMeans(X)
+apply(X, 2, sd)
+```
+
+```{r JagsModelLogReg}
+ddexp = function(x, mu, tau) {
+  0.5*tau*exp(-tau*abs(x-mu)) 
+}
+curve(ddexp(x, mu=0.0, tau=1.0), from=-5.0, to=5.0, ylab="density", main="Double exponential\ndistribution") # double exponential distribution
+curve(dnorm(x, mean=0.0, sd=1.0), from=-5.0, to=5.0, lty=2, add=TRUE) # normal distribution
+legend("topright", legend=c("double exponential", "normal"), lty=c(1,2), bty="n")
+
+library(rjags)
+mod1_string = " model {
+    for (i in 1:length(y)) {
+        y[i] ~ dbern(p[i])
+        logit(p[i]) = int + b[1]*gravity[i] + b[2]*ph[i] + b[3]*osmo[i] + b[4]*cond[i] + b[5]*urea[i] + b[6]*calc[i]
+    }
+    int ~ dnorm(0.0, 1.0/25.0)
+    for (j in 1:6) {
+        b[j] ~ ddexp(0.0, sqrt(2.0)) # has variance 1.0
+    }
+} "
+
+set.seed(92)
+head(X)
+
+data_jags = list(y=dat$r, gravity=X[,"gravity"], ph=X[,"ph"], osmo=X[,"osmo"], cond=X[,"cond"], urea=X[,"urea"], calc=X[,"calc"])
+
+params = c("int", "b")
+
+mod1 = jags.model(textConnection(mod1_string), data=data_jags, n.chains=3)
+update(mod1, 1e3)
+
+mod1_sim = coda.samples(model=mod1,
+                        variable.names=params,
+                        n.iter=5e3)
+mod1_csim = as.mcmc(do.call(rbind, mod1_sim))
+
+## convergence diagnostics
+plot(mod1_sim, ask=TRUE)
+
+gelman.diag(mod1_sim)
+autocorr.diag(mod1_sim)
+autocorr.plot(mod1_sim)
+effectiveSize(mod1_sim)
+
+## calculate DIC
+dic1 = dic.samples(mod1, n.iter=1e3)
+
+summary(mod1_sim)
+
+par(mfrow=c(3,2))
+densplot(mod1_csim[,1:6], xlim=c(-3.0, 3.0))
+
+colnames(X) # variable names
+
+(pm_coef = colMeans(mod1_csim))
+
+pm_Xb = pm_coef["int"] + X[,c(1,4,6)] %*% pm_coef[1:3]
+phat = 1.0 / (1.0 + exp(-pm_Xb))
+head(phat)
+
+plot(phat, jitter(dat$r))
+
+(tab0.5 = table(phat > 0.5, data_jags$y))
+
+sum(diag(tab0.5)) / sum(tab0.5)
+
+(tab0.3 = table(phat > 0.3, data_jags$y))
+
+sum(diag(tab0.3)) / sum(tab0.3)
+```
+
+```{r Mod2LogReg}
+mod2_string = " model {
+    for (i in 1:length(y)) {
+        y[i] ~ dbern(p[i])
+        logit(p[i]) = int + b[1]*gravity[i] + b[2]*cond[i] + b[3]*calc[i]
+    }
+    int ~ dnorm(0.0, 1.0/25.0)
+    for (j in 1:3) {
+        b[j] ~ dnorm(0.0, 1.0/25.0) # noninformative for logistic regression
+    }
+} "
+
+mod2 = jags.model(textConnection(mod2_string), data=data_jags, n.chains=3)
+
+update(mod2, 1e3)
+
+mod2_sim = coda.samples(model=mod2,
+                        variable.names=params,
+                        n.iter=5e3)
+mod2_csim = as.mcmc(do.call(rbind, mod2_sim))
+
+plot(mod2_sim, ask=TRUE)
+
+gelman.diag(mod2_sim)
+autocorr.diag(mod2_sim)
+autocorr.plot(mod2_sim)
+effectiveSize(mod2_sim)
+
+dic2 = dic.samples(mod2, n.iter=1e3)
+dic1
+dic2
+summary(mod2_sim)
+
+HPDinterval(mod2_csim)
+
+par(mfrow=c(3,1))
+densplot(mod2_csim[,1:3], xlim=c(-3.0, 3.0))
+
+colnames(X)[c(1,4,6)] # variable names
+
+pm_coef <- colMeans(mod2_csim)
+pm_coef
+
+1.0 / (1.0 + exp(0.15) )
+1.0 / (1.0 + exp(0.15 - 1.42*0.0 - -1.36*(-1.0) - 1.88*1.0) )
+```
+
+
+## Model Overview (Week 4)
+
+### Possin Regression
+
+```{r PoissonReg}
+library("COUNT")
+data("badhealth")
+?badhealth
+head(badhealth)
+any(is.na(badhealth))
+hist(badhealth$numvisit, breaks=20)
+
+plot(jitter(log(numvisit)) ~ jitter(age), data=badhealth, subset=badh==0, xlab="age", ylab="log(visits)")
+points(jitter(log(numvisit)) ~ jitter(age), data=badhealth, subset=badh==1, col="red")
+```
+
+```{r PoissonMod}
+library("rjags")
+
+mod_string = " model {
+    for (i in 1:length(numvisit)) {
+        numvisit[i] ~ dpois(lam[i])
+        log(lam[i]) = int + b_badh*badh[i] + b_age*age[i] + b_intx*age[i]*badh[i]
+    }
+    
+    int ~ dnorm(0.0, 1.0/1e6)
+    b_badh ~ dnorm(0.0, 1.0/1e4)
+    b_age ~ dnorm(0.0, 1.0/1e4)
+    b_intx ~ dnorm(0.0, 1.0/1e4)
+} "
+
+set.seed(102)
+
+data_jags = as.list(badhealth)
+
+params = c("int", "b_badh", "b_age", "b_intx")
+
+mod = jags.model(textConnection(mod_string), data=data_jags, n.chains=3)
+update(mod, 1e3)
+
+mod_sim = coda.samples(model=mod,
+                        variable.names=params,
+                        n.iter=5e3)
+mod_csim = as.mcmc(do.call(rbind, mod_sim))
+
+## convergence diagnostics
+plot(mod_sim)
+
+gelman.diag(mod_sim)
+autocorr.diag(mod_sim)
+autocorr.plot(mod_sim)
+effectiveSize(mod_sim)
+
+## compute DIC
+dic = dic.samples(mod, n.iter=1e3)
+
+
+X = as.matrix(badhealth[,-1])
+X = cbind(X, with(badhealth, badh*age))
+head(X)
+(pmed_coef = apply(mod_csim, 2, median))
+
+llam_hat = pmed_coef["int"] + X %*% pmed_coef[c("b_badh", "b_age", "b_intx")]
+lam_hat = exp(llam_hat)
+
+hist(lam_hat)
+
+resid = badhealth$numvisit - lam_hat
+plot(resid) # the data were ordered
+
+plot(lam_hat, badhealth$numvisit)
+abline(0.0, 1.0)
+
+plot(lam_hat[which(badhealth$badh==0)], resid[which(badhealth$badh==0)], xlim=c(0, 8), ylab="residuals", xlab=expression(hat(lambda)), ylim=range(resid))
+points(lam_hat[which(badhealth$badh==1)], resid[which(badhealth$badh==1)], col="red")
+
+var(resid[which(badhealth$badh==0)])
+var(resid[which(badhealth$badh==1)])
+
+
+summary(mod_sim)
+
+
+## Prediction
+x1 = c(0, 35, 0) # good health
+x2 = c(1, 35, 35) # bad health
+head(mod_csim)
+
+loglam1 = mod_csim[,"int"] + mod_csim[,c(2,1,3)] %*% x1
+loglam2 = mod_csim[,"int"] + mod_csim[,c(2,1,3)] %*% x2
+lam1 = exp(loglam1)
+lam2 = exp(loglam2)
+
+(n_sim = length(lam1))
+
+y1 = rpois(n=n_sim, lambda=lam1)
+y2 = rpois(n=n_sim, lambda=lam2)
+
+plot(table(factor(y1, levels=0:18))/n_sim, pch=2, ylab="posterior prob.", xlab="visits")
+points(table(y2+0.1)/n_sim, col="red")
+
+mean(y2 > y1)
+```
+
+
+
+### Hierarchical Modeling
+
+```{r CorrelatedData}
+dat = read.table(file="cookies.dat", header=TRUE)
+head(dat)
+
+table(dat$location)
+hist(dat$chips)
+
+boxplot(chips ~ location, data=dat)
+
+set.seed(112)
+n_sim = 500
+alpha_pri = rexp(n_sim, rate=1.0/2.0)
+beta_pri = rexp(n_sim, rate=5.0)
+mu_pri = alpha_pri/beta_pri
+sig_pri = sqrt(alpha_pri/beta_pri^2)
+
+summary(mu_pri)
+summary(sig_pri)
+
+lam_pri = rgamma(n=n_sim, shape=alpha_pri, rate=beta_pri)
+summary(lam_pri)
+
+(lam_pri = rgamma(n=5, shape=alpha_pri[1:5], rate=beta_pri[1:5]))
+(y_pri = rpois(n=150, lambda=rep(lam_pri, each=30)))
+```
+
+```{r JagsHierarchicalModel}
+library(rjags)
+
+mod_string = " model {
+for (i in 1:length(chips)) {
+  chips[i] ~ dpois(lam[location[i]])
+}
+
+for (j in 1:max(location)) {
+  lam[j] ~ dgamma(alpha, beta)
+}
+
+alpha = mu^2 / sig^2
+beta = mu / sig^2
+
+mu ~ dgamma(2.0, 1.0/5.0)
+sig ~ dexp(1.0)
+
+} "
+
+set.seed(113)
+
+data_jags = as.list(dat)
+
+params = c("lam", "mu", "sig")
+
+mod = jags.model(textConnection(mod_string), data=data_jags, n.chains=3)
+update(mod, 1e3)
+
+mod_sim = coda.samples(model=mod,
+                       variable.names=params,
+                       n.iter=5e3)
+mod_csim = as.mcmc(do.call(rbind, mod_sim))
+
+## convergence diagnostics
+plot(mod_sim)
+
+gelman.diag(mod_sim)
+autocorr.diag(mod_sim)
+autocorr.plot(mod_sim)
+effectiveSize(mod_sim)
+
+## compute DIC
+dic = dic.samples(mod, n.iter=1e3)
+
+## observation level residuals
+(pm_params = colMeans(mod_csim))
+
+yhat = rep(pm_params[1:5], each=30)
+resid = dat$chips - yhat
+plot(resid)
+
+plot(jitter(yhat), resid)
+var(resid[yhat<7])
+var(resid[yhat>11])
+
+## location level residuals
+lam_resid = pm_params[1:5] - pm_params["mu"]
+plot(lam_resid)
+abline(h=0, lty=2)
+
+
+summary(mod_sim)
+```
+
+```{r PosteriorPred}
+(n_sim <- nrow(mod_csim))
+
+lam_pred = rgamma(n=n_sim, shape=mod_csim[,"mu"]^2/mod_csim[,"sig"]^2, 
+                  rate=mod_csim[,"mu"]/mod_csim[,"sig"]^2)
+hist(lam_pred)
+mean(lam_pred > 15)
+y_pred = rpois(n=n_sim, lambda=lam_pred)
+hist(y_pred)
+
+mean(y_pred > 15)
+hist(dat$chips)
+
+y_pred1 = rpois(n=n_sim, lambda=mod_csim[,"lam[1]"])
+hist(y_pred1)
+mean(y_pred1 < 7)
+```
+
+```{r RandIntMod}
+library("car")
+data("Leinhardt")
+?Leinhardt
+str(Leinhardt)
+
+pairs(Leinhardt)
+head(Leinhardt)
+
+dat = na.omit(Leinhardt)
+dat$logincome = log(dat$income)
+dat$loginfant = log(dat$infant)
+str(dat)
+
+library("rjags")
+
+mod_string = " model {
+  for (i in 1:length(y)) {
+    y[i] ~ dnorm(mu[i], prec)
+    mu[i] = a[region[i]] + b[1]*log_income[i] + b[2]*is_oil[i]
+  }
+  
+  for (j in 1:max(region)) {
+    a[j] ~ dnorm(a0, prec_a)
+  }
+  
+  a0 ~ dnorm(0.0, 1.0/1.0e6)
+  prec_a ~ dgamma(1/2.0, 1*10.0/2.0)
+  tau = sqrt( 1.0 / prec_a )
+  
+  for (j in 1:2) {
+    b[j] ~ dnorm(0.0, 1.0/1.0e6)
+  }
+  
+  prec ~ dgamma(5/2.0, 5*10.0/2.0)
+  sig = sqrt( 1.0 / prec )
+} "
+
+set.seed(116)
+data_jags = list(y=dat$loginfant, log_income=dat$logincome,
+                  is_oil=as.numeric(dat$oil=="yes"), region=as.numeric(dat$region))
+data_jags$is_oil
+table(data_jags$is_oil, data_jags$region)
+
+params = c("a0", "a", "b", "sig", "tau")
+
+mod = jags.model(textConnection(mod_string), data=data_jags, n.chains=3)
+update(mod, 1e3) # burn-in
+
+mod_sim = coda.samples(model=mod,
+                       variable.names=params,
+                       n.iter=5e3)
+
+mod_csim = as.mcmc(do.call(rbind, mod_sim)) # combine multiple chains
+
+## convergence diagnostics
+plot(mod_sim)
+
+gelman.diag(mod_sim)
+autocorr.diag(mod_sim)
+autocorr.plot(mod_sim)
+effectiveSize(mod_sim)
+dic.samples(mod, n.iter=1e3)
+
+summary(mod_sim)
+```
+
+
+### Mixture Models
+
+```{r Mod1}
+library(rjags)
+
+dat = read.csv("mixture.csv", header=FALSE)
+y = dat$V1
+(n = length(y))
+
+mod_string = " model {
+    for (i in 1:length(y)) {
+        y[i] ~ dnorm(mu[z[i]], prec)
+      z[i] ~ dcat(omega)
+    }
+  
+  mu[1] ~ dnorm(-1.0, 1.0/100.0)
+    mu[2] ~ dnorm(1.0, 1.0/100.0) T(mu[1],) # ensures mu[1] < mu[2]
+
+    prec ~ dgamma(1.0/2.0, 1.0*1.0/2.0)
+  sig = sqrt(1.0/prec)
+    
+    omega ~ ddirich(c(1.0, 1.0))
+} "
+
+set.seed(11)
+
+data_jags = list(y=y)
+
+params = c("mu", "sig", "omega", "z[1]", "z[31]", "z[49]", "z[6]") # Select some z's to monitor
+
+mod = jags.model(textConnection(mod_string), data=data_jags, n.chains=3)
+update(mod, 1e3)
+
+mod_sim = coda.samples(model=mod,
+                        variable.names=params,
+                        n.iter=5e3)
+mod_csim = as.mcmc(do.call(rbind, mod_sim))
+
+## convergence diagnostics
+plot(mod_sim, ask=TRUE)
+
+autocorr.diag(mod_sim)
+effectiveSize(mod_sim)
+
+summary(mod_sim)
+
+```
+
+
+```{r Mod2}
+library(rjags)
+
+dat = read.csv("mixture.csv", header=FALSE)
+y = dat$V1
+(n = length(y))
+
+mod_string = " model {
+    for (i in 1:length(y)) {
+        y[i] ~ dnorm(mu[z[i]], prec)
+      z[i] ~ dcat(omega)
+    }
+  
+  mu[1] ~ dnorm(-1.0, 1.0/100.0)
+  mu[2] ~ dnorm(1.0, 1.0/100.0) T(mu[1],) # ensures mu[1] < mu[2]
+  mu[3] ~ dnorm(1.0, 1.0/100.0) T(mu[2], )
+
+  prec ~ dgamma(1.0/2.0, 1.0*1.0/2.0)
+  sig = sqrt(1.0/prec)
+    
+    omega ~ ddirich(c(1.0, 1.0, 1.0))
+} "
+
+set.seed(11)
+
+data_jags = list(y=y)
+
+params = c("mu", "sig", "omega", "z[1]", "z[31]", "z[49]", "z[6]") # Select some z's to monitor
+
+mod = jags.model(textConnection(mod_string), data=data_jags, n.chains=3)
+update(mod, 1e3)
+
+mod_sim = coda.samples(model=mod,
+                        variable.names=params,
+                        n.iter=5e3)
+mod_csim = as.mcmc(do.call(rbind, mod_sim))
+
+## convergence diagnostics
+plot(mod_sim, ask=TRUE)
+
+autocorr.diag(mod_sim)
+effectiveSize(mod_sim)
+
+summary(mod_sim)
+
+```
+
 
